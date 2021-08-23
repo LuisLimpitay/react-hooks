@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useReducer, useMemo } from "react";
+import React, { useState, useEffect, useReducer, useMemo, useRef } from "react";
 
 const initialState = {
   favorites: [],
@@ -19,7 +19,9 @@ const favoriteReducer = (state, action) => {
 const Characters = () => {
   const [characters, setCharacters] = useState([]);
   const [favorites, dispatch] = useReducer(favoriteReducer, initialState);
-  //1
+  //9.1
+  const searchInput = useReducer(null);
+  //8.1
   const [search, setSearch] = useState("");
   useEffect(() => {
     fetch("https://rickandmortyapi.com/api/character/")
@@ -31,12 +33,12 @@ const Characters = () => {
     dispatch({ type: "ADD_TO_FAVORITE", payload: favorite });
   };
 
-  //2
-  const handleSearch = (event) => {
-    setSearch(event.target.value);
+  //8.2 ==> 9.3 dejo de usar event para usar el hooks
+  const handleSearch = () => {
+    setSearch(searchInput.current.value);
   };
 
-  //4 crear filtros
+  //8.4 crear filtros
   const filteredUsers = useMemo(() => characters.filter((user) => 
       {
         return user.name.toLowerCase().includes(search.toLowerCase());
@@ -49,10 +51,10 @@ const Characters = () => {
       {favorites.favorites.map((favorite) => (
         <li key={favorite.id}>{favorite.name}</li>
       ))}
-      //3 agrega input, usa el onChange por que cuando se termine de tipear
-      desencadena el llamado
+      {/*8.3 agrega input, usa el onChange por que cuando se termine de tipear desencadena el llamado*/}      
       <div className="Search">
-        <input type="text" value={search} onChange={handleSearch} />
+        {/* 9.2 agrego ref , el value va  va a estar dentro del valor que regresa ref */}
+        <input type="text" value={search} ref={searchInput} onChange={handleSearch} />
       </div>
       {filteredUsers.map((character) => (
         <div className="item" key={character.id}>
